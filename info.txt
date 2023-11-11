@@ -1,0 +1,210 @@
+Instalacion:
+    npm i -g typescript 
+
+    ejecutar como administrador powershell y escribir los comandos
+    get-ExecutionPolicy
+    set-ExecutionPolicy remotesigned   (si a todo)
+    y luego abrir powershell normal y ejecutar tsc -v y da la version de ts
+
+En el editor de codigo:
+
+    crear un archivo con la extension .ts en mi caso fue index.ts
+    En una terminal se escribe el comando,
+    tsc index.ts se crea un archivo .js con el mismo nombre que .ts pero sin configurar ts
+    
+    para configurar ts se puede ejecutar el comando,
+    tsc -init en el cual se crea un archivo tsconfig.json
+
+    en dicho archivo json se buscan los siguientes opciones
+    "target" y se cambia a la version es2016 que es la mas estable en todos los navegadores
+    "rootDir" src que es donde va a estar el codigo fuente de ts
+    "outDir" que es el codigo js que viene del ts compilado o transpilado (transpilado < compilado)
+    "noEmitOnError" deja de ejecutar el codigo js en caso de noEmitOnError
+    "removeComments" se descomenta..
+
+    se puede usar solamente tsc para compilar en vez de utilizar tsc index.ts
+
+Depurar codigo TS:
+
+    primero, se va a tsconfig.json y se busca "sourceMap":true y se descomenta y en la terminal
+    escribe tsc y se ejecuta, de esta forma se crea un archivo index.js.map
+    se selecciona una linea de codigo en la cual quede "pinchado" un punto rojo
+    luego en VSC se va al apartado de run and debug y se crea el launch.json
+    luego de "program" que es donde el codigo fuente de ejecucion y antes de 
+    "outFile" que es donde se lanza todo el codigo se pone "preLaunchTask": "tsc: build - tsconfig.json"
+    despues se vuelve a ir a run and debug y se ejecuta el launch
+
+Tipos de TS:
+
+    tipos de js,
+    number
+    string
+    boolean
+    null
+    undefined
+    object
+    function
+
+    tipos de ts,
+    any  - tratar de no usarlo ya que elimina el proposito de ts que sea estatico
+    unKnow
+    never
+    arrays
+    tuplas
+    Enums
+
+    se pueden separar los miles y millones utilizando guion bajo para que se vea mejor la cantidad
+
+    tipos inferidos, reconoce el tipo de valor cuando se declara la variable y el valor
+    en caso que se declare solo la variable aparecera con el dato any
+
+    en las funciones el tipo de argumento se le debe asignar que valor va a tener
+
+    una configuracion que se puede hacer pero no se deberia hacer ya que se pierde el principal fundamento
+    de ts es en el apartado de tsconfig.json buscar "noImplicitAny": true, descomentarlo y cambiar su valor
+    true a false ya que si esta en true cada vez que se vea que esta implicitamente el tipo de dato any
+    dara un error; en caso de tenerlo en false cada vez que se vea un tipo de dato any de forma implicita
+    vsc no dara error. 
+
+    los arrays para declarar el tipo de dato que se va a tener se hace lo siguiente,
+    let animales: string[] = ['leon','perro','gato']
+    si tiene valores de por ej. tipo string pero no esta declarada la variable array como string sera de tipo inferido
+    si se declara la variable pero no contiene los valores tomara como tipo de dato any
+    let nombreArray: Array<tipoDato> = [] es otra forma de declarar un array con sus datos
+    el autocompletado suguiere metodos del tipo de dato en caso de por ejemplo realizar una iteracion en el array
+    un array puede tener distintos tipos de valores declarandolo de la siguiente forma,
+    let array: (tipoDato | tipoDato) = [tipoDato,tipoDato]
+
+    las tuplas son arrays que puede tener distintos tipos de datos y se declaran de la siguiente forma,
+    let nombreTupla: [tipoDato,tipoDato] = [datos]
+    los datos de las tuplas deben estar colocados de la misma formay deben tener la misma cantidad de datos que se
+    especifica en el tipo de dato ej.
+    let tupla: [number,string] = [1,"perro"] en este caso esta bien en cambio si tenemos
+    let tupla: [number,string] = ["perro",1] dara error o si tenemos
+    let tupla: [number,string] = [1,"perro","leon"] o [1,"perro",2]
+
+    se puede tener arreglos dentro de una tupla de la siguiente forma,
+    let tupla: [number,string[]] = [1 , ["hola","chau"]] ya que en el primer lugar hay un number y en el segundo
+    hay un arreglo de strings
+
+    enums, tipo enumarado, lista de constantes que podemos referenciar en un futuro
+    en js,             
+                                              
+    const chica = 's'                           
+    const mediana = 'm'
+    const grande = 'l'
+    const extraGrande = 'xl'
+
+    en ts,
+    utilizar PascalCase
+    enums Talla {Chica,Mediana,Grande,ExtraGrande}
+    por defecto viene 0, 1, 2, 3...
+    en caso de por ejemplo que sea Chica la posicion 3 se hace
+    {Chica = 3, Mediana,Grande,ExtraGrande}
+    quedarian de esta forma las posiciones 3, 4, 5, 6...
+    en caso de querer poner un string se debe cambiar a cada valor el tipo de dato
+    {Chica='s',Mediana='m',Grande='l',ExtraGrande='xl'} y en este caso quedaria como si utilizara js vanilla
+    el codigo generado en js luego de la transpilacion de ts es un
+    IIFE -> Immediately Invoked Function Expression o Expresión de función invocada inmediatamente.
+    (function (Talla) {
+    Talla["Chica"] = "s";
+    Talla["Mediana"] = "m";
+    Talla["Grande"] = "l";
+    Talla["ExtraGrande"] = "xl";
+    })(Talla || (Talla = {}));
+
+    diferencias entre definir enum y const enum,
+
+    enum se crea un objeto en tiempo de ejecucion que representa el conjunto de valores enumerados
+    puede generar cierta sobrecarga en rendimiento y espacio en el codigo js
+
+    const enum elimina el objeto de enumeracion durante la compilacion y reemplaza todas las referencias
+    al enum con los valores numericos reales
+    es mas eficiente en terminos de rendimiento y espacio codigo js
+
+    const enum LoadingState { Idle, Loading, Success, Error }
+
+    Antes de const enum
+    let currentState = LoadingState.Idle
+
+    Después de const enum
+    let currentState = 0  -> Idle
+
+    la principal ventaja es que elimina el tiempo de compilacion, conduce a un codigo js mas limpio y eficiente
+    la principal desventaja dado que las referencias al enum se reemplazan directamente por los valores, hay
+    ciertas limitaciones, como la imposibilidad de utilizar el enum en contextos donde se esperan 
+    valores constantes en tiempo de compilación
+
+
+
+    objetos para hacer un parametro opcional,
+    const objeto:{
+        parametro: tipoDato,
+        parametro?: tipoDato,  -> ? hace que el parametro sea opcional
+    } = { parametro: valor,
+        }    -> en caso de no tener ? tiraria un error de esta forma
+
+    hacer que un parametro solo sea de lectura y que no se pueda cambiar su valor,
+    const objeto: {
+        parametroUno:tipoDato,
+        parametroDos: tipoDato,
+    } = {
+        parametroUno = valor,
+        parametroDos = valor,
+    }
+    objeto.parametroUno = otroValor  -> para que no ocurra esto en la creacion de parametros con los tipos de datos
+                                        se le asigna al parametro readonly
+    const objeto: {
+        readonly parametroUno:tipoDato,
+        parametroDos: tipoDato,
+    } = {
+        parametroUno = valor,
+        parametroDos = valor,
+    }
+    objeto.parametroUno = otroValor -> daria un error ya que el valor solo es de
+
+
+    utilizar enums dentro de objetos, si tengo un enums de Talla
+
+    const objeto: {
+        parametro: tipoDato,
+        parametro: tipoDato,
+        parametro: Talla   -> referido al enum Talla
+    } = {
+        parametro: valor,
+        parametro: valor,
+        parametro: Talla.Valor  -> valor que se le dio en el enum
+    }
+
+
+    crear un valores para objetos,
+
+    type NombreValores = {
+        parametro: tipoDato,
+        parametro: tipoDato,
+    }
+    const objeto: NombreValores = {
+        parametro: valor,
+        parametro, valor
+    }
+
+    
+    crear valores para valores de objetos,
+    type NombreParaValores = {
+        parametro: tipoDato,
+        parametro: tipoDato,
+    }
+    type NombreValores = {
+        parametro: tipoDato,
+        parametro: tipoDato,
+        parametro: NombreParaValores,
+    }
+
+
+    arrays de objetos,
+    const arrayObjetos : Valores[] = [
+        {},
+        {}
+    ]
+
+
